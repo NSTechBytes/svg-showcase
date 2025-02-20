@@ -146,22 +146,42 @@ previewScale.addEventListener("input", (event) => {
   localStorage.setItem("previewHeight", heightValue);
 });
 
-// ---------------------- Update Page Functionality ----------------------
+// ---------------------- Update Page Functionality using Windows Registry ----------------------
 const updateButton = document.getElementById("check-update");
+
+/**
+ * Compare two version strings (e.g., "100.0.0" vs "100.0.1").
+ * Returns 1 if v1 > v2, -1 if v1 < v2, or 0 if equal.
+ */
+function compareVersions(v1, v2) {
+  const parts1 = v1.split('.').map(Number);
+  const parts2 = v2.split('.').map(Number);
+  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+    const a = parts1[i] || 0;
+    const b = parts2[i] || 0;
+    if (a > b) return 1;
+    if (a < b) return -1;
+  }
+  return 0;
+}
 
 async function checkForUpdates() {
   try {
-    const localResponse = await fetch('./version.json');
-    const localData = await localResponse.json();
-    const localVersion = parseFloat(localData[0].Version);
+    // Retrieve the local version from the Windows Registry via Electron's API.
+    // Ensure that your main process (or preload script) implements this function.
+    const localVersion = await window.electronAPI.getLocalVersion();
     document.getElementById("local-version").textContent = "Local Version: " + localVersion;
     
-    const remoteResponse = await fetch('https://raw.githubusercontent.com/NSTechBytes/svg-showcase/main/version.json');
+    // Retrieve the remote version from GitHub's latest release endpoint.
+    const remoteResponse = await fetch('https://api.github.com/repos/NSTechBytes/svg-showcase/releases/latest');
     const remoteData = await remoteResponse.json();
-    const remoteVersion = parseFloat(remoteData[0].Version);
+    let remoteVersion = remoteData.tag_name;
+    // Remove any "v" prefix from the tag name if present.
+    remoteVersion = remoteVersion.startsWith("v") ? remoteVersion.substring(1) : remoteVersion;
     document.getElementById("remote-version").textContent = "Remote Version: " + remoteVersion;
     
-    if (remoteVersion > localVersion) {
+    // Compare the versions.
+    if (compareVersions(remoteVersion, localVersion) > 0) {
       document.getElementById("update-status").textContent = "Update Available!";
       updateButton.textContent = "Download Now";
       updateButton.onclick = () => {

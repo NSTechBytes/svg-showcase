@@ -1,8 +1,30 @@
 const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const { exec } = require('child_process');
+//const regedit = require('regedit');
 
 let mainWindow;
+
+ipcMain.handle('get-local-version', async () => {
+  return new Promise((resolve, reject) => {
+    // Query the registry for the Version value.
+    exec('reg query "HKCU\\Software\\SVG Showcase" /v Version', (error, stdout, stderr) => {
+      if (error) {
+        console.error('Registry query error:', error);
+        return reject(error);
+      }
+      // Look for a line like:
+      //    Version    REG_SZ    100.0.0
+      const match = stdout.match(/Version\s+REG_SZ\s+([^\r\n]+)/);
+      if (match && match[1]) {
+        resolve(match[1].trim());
+      } else {
+        reject(new Error("Version key not found"));
+      }
+    });
+  });
+});
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({

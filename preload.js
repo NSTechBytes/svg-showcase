@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   maximize: () => ipcRenderer.send("maximize-window"),
   close: () => ipcRenderer.send("close-window"),
   onOpenSVG: (callback) => ipcRenderer.on('open-svg', callback),
+  getLocalVersion: () => ipcRenderer.invoke('get-local-version'),
   onWindowMaximized: (callback) =>
     ipcRenderer.on("window-maximized", (event, isMaximized) => callback(isMaximized))
 });
