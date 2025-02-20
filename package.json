@@ -1,0 +1,57 @@
+{
+  "name": "svg-showcase",
+  "version": "1.0.0",
+  "description": "An Electron-based SVG viewer and converter that allows users to view and export SVG files in multiple formats.",
+  "main": "index.js",
+  "author": "NS Tech Bytes",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "package": "electron-packager . svg-showcase --platform=win32 --arch=x64 --icon=assets/icon.ico"
+  },
+  "dependencies": {
+    "canvg": "^3.0.0",
+    "jspdf": "^2.5.1"
+  },
+  "devDependencies": {
+    "electron": "^34.2.0",
+    "electron-builder": "^23.6.0",
+    "electron-packager": "^15.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NSTechBytes/svg-showcase.git"
+  },
+  "keywords": [
+    "electron",
+    "svg",
+    "viewer",
+    "converter",
+    "tool"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NSTechBytes/svg-showcase/issues"
+  },
+  "homepage": "https://github.com/NSTechBytes/svg-showcase#readme",
+  "build": {
+    "appId": "com.nstechbytes.svgshowcase",
+    "productName": "SVG Showcase",
+    "win": {
+      "icon": "assets/icon.ico"
+    },
+    "files": [
+      "assets/**/*",
+      "fonts/**/*",
+      "index.js",
+      "preload.js",
+      "renderer.js",
+      "index.html",
+      "package.json",
+      "version.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  }
+}

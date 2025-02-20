@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG Showcase</title>
+  
+  <!-- Local Font Awesome Solid & Brands -->
+  <style>
+    /* Font Awesome Solid (fa-solid-900) */
+    @font-face {
+      font-family: 'SVG-Showcase';
+      src: url('./fonts/SVG-Showcase.woff') format('woff');
+      font-weight: 900;
+      font-style: normal;
+    }
+
+    .fas {
+      font-family: 'SVG-Showcase' !important;
+      font-weight: 900;
+      display: inline-block;
+      font-style: normal;
+      text-rendering: auto;
+      line-height: 1;
+    }
+    .fab {
+      font-family: 'SVG-Showcase' !important;
+      font-weight: 400;
+      display: inline-block;
+      font-style: normal;
+      text-rendering: auto;
+      line-height: 1;
+    }
+    /* Minimal Icon Mappings (Solid) */
+    .fa-home:before { content: "\e906"; }
+    .fa-info-circle:before { content: "\e907"; }
+    .fa-cog:before { content: "\e909"; }
+    .fa-sync-alt:before { content: "\e900"; }
+    .fa-window-minimize:before { content: "\e908"; }
+    .fa-window-maximize:before { content: "\e904"; }
+    .fa-window-restore:before { content: "\e902"; }
+    .fa-times:before { content: "\e901"; }
+    .fa-file:before { content: "\e903"; }
+    /* Minimal Icon Mappings (Brands) */
+    .fa-github:before { content: "\e905"; }
+    .fa-youtube:before { content: "\e90b"; }
+    .fa-website:before { content: "\e90a"; }
+  </style>
+  
+  <!-- Global & Theming Styles -->
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      /* Toolbar uses a blue-to-pink horizontal gradient */
+      --toolbar-bg: linear-gradient(90deg, #6fb1fc, #fc6fb1);
+      /* Sidebar uses a solid color */
+      --sidebar-bg: #1c1c1c;
+      --card-bg: #1e1e1e;
+      --grid-bg: #292929;
+      --preview-height: 250px;
+      --accent-color: #6fb1fc;
+      --border-radius: 8px;
+      --transition-speed: 0.3s;
+      --update-height: 40px;
+    }
+    .light-theme {
+      --bg-color: #fafafa;
+      --text-color: #333333;
+      --toolbar-bg: linear-gradient(90deg, #6fb1fc, #fc6fb1);
+      /* Light theme sidebar set to a solid color */
+      --sidebar-bg: #eaeaea;
+      --card-bg: #ffffff;
+      --grid-bg: #e0e0e0;
+      --accent-color: #4364f7;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      overflow-x: hidden;
+      overflow-y: auto;
+      transition: background-color var(--transition-speed), color var(--transition-speed);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Animations */
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    /* Toolbar */
+    #toolbar {
+      height: 50px;
+      background: var(--toolbar-bg);
+      background-size: 200% 200%;
+      animation: gradientShift 5s ease infinite;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      -webkit-app-region: drag;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+    }
+    #appTitle {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    #windowControls {
+      display: flex;
+      -webkit-app-region: no-drag;
+    }
+    #windowControls button {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      margin-left: 15px;
+      cursor: pointer;
+      transition: background var(--transition-speed), transform var(--transition-speed);
+      border-radius: 3px;
+      width: 35px;
+      height: 35px;
+    }
+    #windowControls button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+    
+    /* Layout: Sidebar + Main Content */
+    .content-container {
+      display: flex;
+      height: calc(100vh - 50px);
+    }
+    
+    /* Sidebar */
+    #sidebar {
+      width: 80px;
+      background: var(--sidebar-bg);
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+    }
+    .sidebar-item {
+      color: var(--text-color);
+      font-size: 26px;
+      cursor: pointer;
+      transition: background var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
+      padding: 10px;
+      border-radius: 50%;
+      background: transparent;
+    }
+    /* On hover, apply a gradient background */
+    .sidebar-item:hover {
+      background: linear-gradient(45deg, #6fb1fc, #fc6fb1);
+      color: #fff;
+      transform: scale(1.1);
+    }
+    /* Active sidebar item uses the same gradient */
+    .sidebar-item.active {
+      background: linear-gradient(45deg, #6fb1fc, #fc6fb1);
+      border-radius: 5px;
+      color: #fff;
+      padding: 10px;
+    }
+    
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    /* Home Page */
+    #home-page {
+      display: block;
+      text-align: left;
+      padding: 40px;
+      animation: fadeIn var(--transition-speed);
+    }
+    .home-title {
+      font-size: 36px;
+      font-weight: bold;
+      /* Gradient text for the SVG Showcase title */
+      background: linear-gradient(90deg, #6fb1fc, #fc6fb1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    .home-subtitle {
+      font-size: 18px;
+      margin-bottom: 30px;
+      min-height: 24px;
+      letter-spacing: 1px;
+    }
+    .cards {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .card {
+      width: 220px;
+      height: 160px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, background var(--transition-speed), box-shadow var(--transition-speed);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+    .card:hover {
+      background: var(--accent-color);
+      animation: bounce 0.4s;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+    }
+    
+    /* Info Page */
+    #info-page {
+      display: none;
+      text-align: left;
+      padding: 40px;
+      animation: fadeIn var(--transition-speed);
+    }
+    #info-page h2 {
+      margin-bottom: 20px;
+    }
+    .info-content {
+      max-width: 600px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .social-links {
+      margin-top: 20px;
+    }
+    .social-links a {
+      text-decoration: none;
+      color: var(--accent-color);
+      margin-right: 10px;
+      font-size: 24px;
+      transition: transform var(--transition-speed);
+    }
+    .dark-theme .social-links a {
+      color: #fff;
+    }
+    .social-links a:hover {
+      transform: scale(1.2);
+    }
+    
+    /* Files Page */
+    #files-page {
+      display: none;
+      animation: fadeIn var(--transition-speed);
+    }
+    #files-page h2 {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 10px;
+    }
+    .svg-card {
+      background: var(--card-bg);
+      padding: 10px;
+      border-radius: var(--border-radius);
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .svg-card:hover {
+      transform: translateY(-5px);
+    }
+    .svg-preview {
+      width: 100%;
+      height: var(--preview-height);
+      background: var(--grid-bg);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .svg-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .svg-card p {
+      margin-top: 8px;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    #no-files {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    
+    /* Settings Page */
+    #settings-page {
+      display: none;
+      animation: fadeIn var(--transition-speed);
+    }
+    #settings-page h2 {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .settings-option {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    .settings-option label {
+      font-size: 16px;
+      flex: 1;
+    }
+    .settings-option .option-control {
+      flex: 1;
+      text-align: right;
+    }
+    .settings-option select,
+    .settings-option input[type="number"] {
+      background: var(--card-bg);
+      border: 1px solid var(--grid-bg);
+      border-radius: 4px;
+      padding: 5px 8px;
+      color: var(--text-color);
+      font-size: 16px;
+      outline: none;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    }
+    .settings-option select:focus,
+    .settings-option input[type="number"]:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 5px var(--accent-color);
+    }
+    
+    /* Update Page */
+    #update-page {
+      display: none;
+      animation: fadeIn var(--transition-speed);
+    }
+    #update-page h2 {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .update-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .update-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .update-content p {
+      height: var(--update-height);
+      line-height: var(--update-height);
+      margin: 0;
+      font-size: 16px;
+    }
+    #check-update {
+      height: var(--update-height);
+      line-height: var(--update-height);
+      padding: 0 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: var(--toolbar-bg);
+      color: #fff;
+      transition: background var(--transition-speed);
+    }
+    #check-update:hover {
+      background: #555;
+    }
+    
+    /* Modal Popup Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn var(--transition-speed);
+    }
+    .modal-content {
+      background-color: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      width: 80%;
+      max-width: 600px;
+      color: var(--text-color);
+      position: relative;
+      text-align: center;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+      animation: scaleIn 0.4s;
+    }
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      cursor: pointer;
+      font-size: 24px;
+    }
+    /* Gradient popup buttons */
+    .modal-actions button {
+      margin-right: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: linear-gradient(45deg, #6fb1fc, #fc6fb1);
+      color: #fff;
+      transition: background 0.3s, transform 0.3s, opacity 0.3s;
+    }
+    .modal-actions button:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+    .modal-content textarea {
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--grid-bg);
+      border-radius: 4px;
+      padding: 8px;
+      font-family: monospace;
+      width: 100%;
+      resize: vertical;
+    }
+  </style>
+  
+  <!-- Include external libraries for SVG rendering & PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvg/3.0.9/umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <!-- Toolbar -->
+  <div id="toolbar">
+    <span id="appTitle">SVG Showcase</span>
+    <div id="windowControls">
+      <button id="minimizeBtn"><i class="fas fa-window-minimize"></i></button>
+      <button id="maximizeBtn"><i class="fas fa-window-maximize"></i></button>
+      <button id="closeBtn"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  
+  <div class="content-container">
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <div class="sidebar-item" id="sidebar-home" title="Home">
+        <i class="fas fa-home"></i>
+      </div>
+      <div class="sidebar-item" id="sidebar-files" title="Files">
+        <i class="fas fa-file"></i>
+      </div>
+      <div class="sidebar-item" id="sidebar-settings" title="Settings">
+        <i class="fas fa-cog"></i>
+      </div>
+      <div class="sidebar-item" id="sidebar-update" title="Update">
+        <i class="fas fa-sync-alt"></i>
+      </div>
+      <div class="sidebar-item" id="sidebar-info" title="Info">
+        <i class="fas fa-info-circle"></i>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Home Page -->
+      <div id="home-page">
+        <div class="home-title">SVG Showcase</div>
+        <div id="home-subtitle" class="home-subtitle"></div>
+        <div class="cards">
+          <div class="card" id="openFile">📂 Open SVG Files</div>
+          <div class="card" id="openFolder">📁 Open Folder</div>
+        </div>
+      </div>
+      
+      <!-- Info Page -->
+      <div id="info-page">
+        <h2>About the Developer</h2>
+        <div class="info-content">
+          <p>Developed by NS Tech Bytes, a passionate developer dedicated to creating intuitive and engaging applications.</p>
+          <p>If you like this app, feel free to connect with me through the social links below:</p>
+          <div class="social-links">
+            <a href="https://github.com/NSTechBytes" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://youtube.com/@nstechbytes" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://nstechbytes.pages.dev/" target="_blank"><i class="fab fa-website"></i></a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Files Page -->
+      <div id="files-page">
+        <h2>Files</h2>
+        <div id="grid"></div>
+        <div id="no-files" style="display: none;">No file opened</div>
+      </div>
+      
+      <!-- Settings Page -->
+      <div id="settings-page">
+        <h2>Settings</h2>
+        <div class="settings-option">
+          <label for="theme-toggle">Theme:</label>
+          <div class="option-control">
+            <select id="theme-toggle">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-option">
+          <label for="preview-scale">Preview Height (px):</label>
+          <div class="option-control">
+            <input type="number" id="preview-scale" min="150" max="400" value="250" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Update Page -->
+      <div id="update-page">
+        <h2>Update</h2>
+        <div class="update-container">
+          <div class="update-content">
+            <p id="local-version">Local Version: N/A</p>
+            <p id="remote-version">Remote Version: N/A</p>
+            <p id="update-status">Status: Not checked</p>
+          </div>
+          <button id="check-update">Check for Updates</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Popup for SVG File Info -->
+  <div id="fileModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2 id="modal-file-name">File Name</h2>
+      <div id="modal-svg-preview" style="margin: 10px 0;"></div>
+      <textarea id="modal-svg-code" readonly style="height: 150px;"></textarea>
+      <div class="modal-actions" style="margin-top: 10px;">
+        <button id="export-png">Export as PNG</button>
+        <button id="export-ico">Export as ICO</button>
+        <button id="copy-svg">Copy SVG Code</button>
+        <button id="save-pdf">Save as PDF</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="renderer.js"></script>
+</body>
+</html>
