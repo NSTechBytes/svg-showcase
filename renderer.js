@@ -61,7 +61,7 @@ window.electronAPI.onWindowMaximized((isMaximized) => {
 });
 document.getElementById("maximizeBtn").innerHTML = `<i class="fas fa-window-maximize"></i>`;
 
-// ---------------------- Sidebar Navigation & Active State ----------------------
+// ---------------------- Navigation & Active State via Navbar ----------------------
 function showPage(pageId) {
   ["home-page", "info-page", "files-page", "settings-page", "update-page"].forEach(id => {
     const page = document.getElementById(id);
@@ -70,47 +70,48 @@ function showPage(pageId) {
   const selectedPage = document.getElementById(pageId);
   if (selectedPage) selectedPage.style.display = "block";
 
-  // Update sidebar active state
-  document.querySelectorAll(".sidebar-item").forEach(item => {
-    item.classList.remove("active");
+  // Update active state on navbar links
+  document.querySelectorAll("#nav-right a").forEach(link => {
+    link.classList.remove("active");
   });
   const mapping = {
-    "home-page": "sidebar-home",
-    "files-page": "sidebar-files",
-    "settings-page": "sidebar-settings",
-    "update-page": "sidebar-update",
-    "info-page": "sidebar-info"
+    "home-page": "nav-home",
+    "files-page": "nav-files",
+    "settings-page": "nav-settings",
+    "update-page": "nav-update",
+    "info-page": "nav-info"
   };
-  const sidebarId = mapping[pageId];
-  if (sidebarId) {
-    document.getElementById(sidebarId).classList.add("active");
+  const navId = mapping[pageId];
+  if (navId) {
+    document.getElementById(navId).classList.add("active");
   }
 }
 
 window.addEventListener("load", () => {
   showPage("home-page");
-  typeEffect();
+ // typeEffect();
 });
 
-// Sidebar click listeners
-document.getElementById("sidebar-home").addEventListener("click", () => {
+// Navbar click listeners
+document.getElementById("nav-home").addEventListener("click", () => {
   showPage("home-page");
 });
-document.getElementById("sidebar-info").addEventListener("click", () => {
+document.getElementById("nav-info").addEventListener("click", () => {
   showPage("info-page");
 });
-document.getElementById("sidebar-files").addEventListener("click", () => {
+document.getElementById("nav-files").addEventListener("click", () => {
   renderGrid(currentFiles);
   showPage("files-page");
 });
-document.getElementById("sidebar-settings").addEventListener("click", () => {
+document.getElementById("nav-settings").addEventListener("click", () => {
   showPage("settings-page");
 });
-document.getElementById("sidebar-update").addEventListener("click", () => {
+document.getElementById("nav-update").addEventListener("click", () => {
   showPage("update-page");
 });
 
 // ---------------------- Settings Page Functionality ----------------------
+// Theme and Preview Scale
 const themeToggle = document.getElementById("theme-toggle");
 const previewScale = document.getElementById("preview-scale");
 
@@ -146,13 +147,41 @@ previewScale.addEventListener("input", (event) => {
   localStorage.setItem("previewHeight", heightValue);
 });
 
+// ---------------------- Export Options Settings ----------------------
+const pngWidthInput = document.getElementById("png-width");
+const pngHeightInput = document.getElementById("png-height");
+const iconWidthInput = document.getElementById("icon-width");
+const iconHeightInput = document.getElementById("icon-height");
+
+if (localStorage.getItem("pngWidth")) {
+  pngWidthInput.value = localStorage.getItem("pngWidth");
+}
+if (localStorage.getItem("pngHeight")) {
+  pngHeightInput.value = localStorage.getItem("pngHeight");
+}
+if (localStorage.getItem("iconWidth")) {
+  iconWidthInput.value = localStorage.getItem("iconWidth");
+}
+if (localStorage.getItem("iconHeight")) {
+  iconHeightInput.value = localStorage.getItem("iconHeight");
+}
+
+pngWidthInput.addEventListener("input", (event) => {
+  localStorage.setItem("pngWidth", event.target.value);
+});
+pngHeightInput.addEventListener("input", (event) => {
+  localStorage.setItem("pngHeight", event.target.value);
+});
+iconWidthInput.addEventListener("input", (event) => {
+  localStorage.setItem("iconWidth", event.target.value);
+});
+iconHeightInput.addEventListener("input", (event) => {
+  localStorage.setItem("iconHeight", event.target.value);
+});
+
 // ---------------------- Update Page Functionality using Windows Registry ----------------------
 const updateButton = document.getElementById("check-update");
 
-/**
- * Compare two version strings (e.g., "100.0.0" vs "100.0.1").
- * Returns 1 if v1 > v2, -1 if v1 < v2, or 0 if equal.
- */
 function compareVersions(v1, v2) {
   const parts1 = v1.split('.').map(Number);
   const parts2 = v2.split('.').map(Number);
@@ -167,20 +196,15 @@ function compareVersions(v1, v2) {
 
 async function checkForUpdates() {
   try {
-    // Retrieve the local version from the Windows Registry via Electron's API.
-    // Ensure that your main process (or preload script) implements this function.
     const localVersion = await window.electronAPI.getLocalVersion();
-    document.getElementById("local-version").textContent = "Local Version: " + localVersion;
+    document.getElementById("local-version").textContent =  localVersion;
     
-    // Retrieve the remote version from GitHub's latest release endpoint.
     const remoteResponse = await fetch('https://api.github.com/repos/NSTechBytes/svg-showcase/releases/latest');
     const remoteData = await remoteResponse.json();
     let remoteVersion = remoteData.tag_name;
-    // Remove any "v" prefix from the tag name if present.
     remoteVersion = remoteVersion.startsWith("v") ? remoteVersion.substring(1) : remoteVersion;
-    document.getElementById("remote-version").textContent = "Remote Version: " + remoteVersion;
+    document.getElementById("remote-version").textContent = remoteVersion;
     
-    // Compare the versions.
     if (compareVersions(remoteVersion, localVersion) > 0) {
       document.getElementById("update-status").textContent = "Update Available!";
       updateButton.textContent = "Download Now";
@@ -202,15 +226,11 @@ async function checkForUpdates() {
 
 updateButton.addEventListener("click", checkForUpdates);
 
-// ---------------------- Modal Popup Functionality for SVG File Info ----------------------
+// ---------------------- Modal Popup & Export Functions ----------------------
 async function showFileModal(filePath) {
   const fileName = filePath.split(/[/\\]/).pop();
   document.getElementById("modal-file-name").textContent = fileName;
-  
-  // Set preview image
   document.getElementById("modal-svg-preview").innerHTML = `<img src="file://${filePath}" alt="${fileName}" style="max-width:100%; max-height:200px;" />`;
-  
-  // Load SVG content
   try {
     const response = await fetch("file://" + filePath);
     if (response.ok) {
@@ -223,11 +243,9 @@ async function showFileModal(filePath) {
     console.error("Error loading SVG content:", err);
     document.getElementById("modal-svg-code").value = "Error loading SVG content.";
   }
-  
   document.getElementById("fileModal").style.display = "flex";
 }
 
-// Delegate click events on grid to open modal
 gridContainer.addEventListener("click", (e) => {
   const card = e.target.closest(".svg-card");
   if (card) {
@@ -238,7 +256,6 @@ gridContainer.addEventListener("click", (e) => {
   }
 });
 
-// Close modal via close button or clicking outside modal content
 document.querySelector("#fileModal .close-button").addEventListener("click", () => {
   document.getElementById("fileModal").style.display = "none";
 });
@@ -248,17 +265,21 @@ document.getElementById("fileModal").addEventListener("click", (e) => {
   }
 });
 
-// ---------------------- Export Functions ----------------------
 async function exportSVGAsPNG() {
   const svgCode = document.getElementById("modal-svg-code").value;
   const fileName = document.getElementById("modal-file-name").textContent;
   
+  const pngWidth = Number(document.getElementById("png-width").value) || 800;
+  const pngHeight = Number(document.getElementById("png-height").value) || 600;
+  
   const canvas = document.createElement("canvas");
-  canvas.width = 800;
-  canvas.height = 600;
+  canvas.width = pngWidth;
+  canvas.height = pngHeight;
   const ctx = canvas.getContext("2d");
   
   const v = await canvg.Canvg.fromString(ctx, svgCode);
+  // Resize to match the specified export dimensions
+  v.resize(canvas.width, canvas.height, true);
   await v.render();
   
   const dataURL = canvas.toDataURL("image/png");
@@ -274,12 +295,16 @@ async function exportSVGAsPDF() {
   const svgCode = document.getElementById("modal-svg-code").value;
   const fileName = document.getElementById("modal-file-name").textContent;
   
+  const pngWidth = Number(document.getElementById("png-width").value) || 800;
+  const pngHeight = Number(document.getElementById("png-height").value) || 600;
+  
   const canvas = document.createElement("canvas");
-  canvas.width = 800;
-  canvas.height = 600;
+  canvas.width = pngWidth;
+  canvas.height = pngHeight;
   const ctx = canvas.getContext("2d");
   
   const v = await canvg.Canvg.fromString(ctx, svgCode);
+  v.resize(canvas.width, canvas.height, true);
   await v.render();
   
   const dataURL = canvas.toDataURL("image/png");
@@ -297,12 +322,16 @@ async function exportSVGAsICO() {
   const svgCode = document.getElementById("modal-svg-code").value;
   const fileName = document.getElementById("modal-file-name").textContent;
   
+  const iconWidth = Number(document.getElementById("icon-width").value) || 64;
+  const iconHeight = Number(document.getElementById("icon-height").value) || 64;
+  
   const canvas = document.createElement("canvas");
-  canvas.width = 64;
-  canvas.height = 64;
+  canvas.width = iconWidth;
+  canvas.height = iconHeight;
   const ctx = canvas.getContext("2d");
   
   const v = await canvg.Canvg.fromString(ctx, svgCode);
+  v.resize(canvas.width, canvas.height, true);
   await v.render();
   
   const dataURL = canvas.toDataURL("image/png");
@@ -314,7 +343,6 @@ async function exportSVGAsICO() {
   document.body.removeChild(a);
 }
 
-// ---------------------- Modal Action Button Listeners ----------------------
 document.getElementById("export-png").addEventListener("click", exportSVGAsPNG);
 document.getElementById("export-ico").addEventListener("click", exportSVGAsICO);
 document.getElementById("save-pdf").addEventListener("click", exportSVGAsPDF);
@@ -323,31 +351,55 @@ document.getElementById("copy-svg").addEventListener("click", () => {
   navigator.clipboard.writeText(svgCode);
 });
 
-// ---------------------- Typing Effect on Home Page ----------------------
-const homeSubtitle = document.getElementById("home-subtitle");
-const typingText = "Most Reliable Tool for SVG  to view, and export SVG files in multiple formats";
-let index = 0;
-function typeEffect() {
-  if (index < typingText.length) {
-    homeSubtitle.textContent += typingText.charAt(index);
-    index++;
-    setTimeout(typeEffect, 10);
-  }
-}
+//const homeSubtitle = document.getElementById("home-subtitle");
+//const typingText = "Most Reliable Tool for SVG to view, and export SVG files in multiple formats";
+//let index = 0;
+//function typeEffect() {
+//  if (index < typingText.length) {
+//    homeSubtitle.textContent += typingText.charAt(index);
+//    index++;
+//   setTimeout(typeEffect, 10);
+//  }
+//}
 
 window.electronAPI.onOpenSVG((event, files) => {
-  console.log("Received open-svg event with:", files);
-  
-  // Ensure that files is always an array.
   let newFiles = Array.isArray(files) ? files : [files];
-
-  // Merge newFiles with the currentFiles array without duplicates.
   currentFiles = [...new Set([...currentFiles, ...newFiles])];
-  console.log("Merged currentFiles:", currentFiles);
-
   renderGrid(currentFiles);
   showPage("files-page");
 });
 
+function showPage(pageId) {
+  if (typeof pageId === 'undefined') {
+    console.error("showPage called without a pageId");
+    return;
+  }
 
+  // Hide all pages
+  ["home-page", "info-page", "files-page", "settings-page", "update-page"].forEach(id => {
+    const page = document.getElementById(id);
+    if (page) page.style.display = "none";
+  });
 
+  // Show selected page
+  const selectedPage = document.getElementById(pageId);
+  if (selectedPage) selectedPage.style.display = "block";
+
+  // Update active state on navbar links (use .nav-right a to match your HTML)
+  document.querySelectorAll(".nav-right a").forEach(link => {
+    link.classList.remove("active");
+  });
+  
+  const mapping = {
+    "home-page": "nav-home",
+    "files-page": "nav-files",
+    "settings-page": "nav-settings",
+    "update-page": "nav-update",
+    "info-page": "nav-info"
+  };
+  
+  const navId = mapping[pageId];
+  if (navId) {
+    document.getElementById(navId).classList.add("active");
+  }
+}

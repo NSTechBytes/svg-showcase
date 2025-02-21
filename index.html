@@ -7,7 +7,6 @@
   
   <!-- Local Font Awesome Solid & Brands -->
   <style>
-    /* Font Awesome Solid (fa-solid-900) */
     @font-face {
       font-family: 'SVG-Showcase';
       src: url('./fonts/SVG-Showcase.woff') format('woff');
@@ -31,15 +30,10 @@
       line-height: 1;
     }
     /* Minimal Icon Mappings (Solid) */
-    .fa-home:before { content: "\e906"; }
-    .fa-info-circle:before { content: "\e907"; }
-    .fa-cog:before { content: "\e909"; }
-    .fa-sync-alt:before { content: "\e900"; }
     .fa-window-minimize:before { content: "\e908"; }
     .fa-window-maximize:before { content: "\e904"; }
-    .fa-window-restore:before { content: "\e902"; }
+    .fa-window-restore:before { content: "\e900"; }
     .fa-times:before { content: "\e901"; }
-    .fa-file:before { content: "\e903"; }
     /* Minimal Icon Mappings (Brands) */
     .fa-github:before { content: "\e905"; }
     .fa-youtube:before { content: "\e90b"; }
@@ -51,9 +45,6 @@
     :root {
       --bg-color: #121212;
       --text-color: #e0e0e0;
-      /* Toolbar uses a blue-to-pink horizontal gradient */
-      --toolbar-bg: linear-gradient(90deg, #6fb1fc, #fc6fb1);
-      /* Sidebar uses a solid color */
       --sidebar-bg: #1c1c1c;
       --card-bg: #1e1e1e;
       --grid-bg: #292929;
@@ -62,16 +53,16 @@
       --border-radius: 8px;
       --transition-speed: 0.3s;
       --update-height: 40px;
+      --toolbar-bg: #121212;
     }
     .light-theme {
       --bg-color: #fafafa;
       --text-color: #333333;
-      --toolbar-bg: linear-gradient(90deg, #6fb1fc, #fc6fb1);
-      /* Light theme sidebar set to a solid color */
       --sidebar-bg: #eaeaea;
       --card-bg: #ffffff;
       --grid-bg: #e0e0e0;
       --accent-color: #4364f7;
+      --toolbar-bg: #eaeaea;
     }
     
     * {
@@ -90,60 +81,52 @@
       -moz-osx-font-smoothing: grayscale;
     }
     
-    /* Existing Animations */
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* Custom Scrollbar Styles for Body & HTML */
+    body::-webkit-scrollbar,
+    html::-webkit-scrollbar {
+      width: 12px;
     }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-      100% { transform: scale(1); }
+    body::-webkit-scrollbar-track,
+    html::-webkit-scrollbar-track {
+      background: var(--grid-bg);
     }
-    @keyframes bounce {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-      100% { transform: translateY(0); }
+    body::-webkit-scrollbar-thumb,
+    html::-webkit-scrollbar-thumb {
+      background-color: var(--accent-color);
+      border-radius: 6px;
+      border: 3px solid var(--grid-bg);
     }
-    @keyframes scaleIn {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    body {
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent-color) var(--grid-bg);
     }
     
-    /* New Animations for Enhanced Visual Appeal */
-    @keyframes slideInFromRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    /* Custom Scrollbar for the SVG Code Textarea */
+    #modal-svg-code::-webkit-scrollbar {
+      width: 8px;
     }
-    @keyframes rotateIcon {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+    #modal-svg-code::-webkit-scrollbar-track {
+      background: var(--grid-bg);
+    }
+    #modal-svg-code::-webkit-scrollbar-thumb {
+      background-color: var(--accent-color);
+      border-radius: 4px;
     }
     
-    /* Toolbar */
+    /* Toolbar with window controls - Now Sticky & Colored */
     #toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
       height: 50px;
       background: var(--toolbar-bg);
-      background-size: 200% 200%;
-      animation: gradientShift 5s ease infinite;
-      color: #fff;
       display: flex;
+      justify-content: flex-end;
       align-items: center;
-      justify-content: space-between;
       padding: 0 15px;
       -webkit-app-region: drag;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.6); /* Enhanced shadow for depth */
-      backdrop-filter: blur(8px);
-    }
-    #appTitle {
-      font-size: 20px;
-      font-weight: bold;
-      animation: slideInFromRight 0.6s ease-out;
+      z-index: 1000;
     }
     #windowControls {
       display: flex;
@@ -152,7 +135,7 @@
     #windowControls button {
       background: transparent;
       border: none;
-      color: #fff;
+      color: var(--text-color);
       font-size: 18px;
       margin-left: 15px;
       cursor: pointer;
@@ -166,98 +149,102 @@
       transform: scale(1.1);
     }
     
-    /* Layout: Sidebar + Main Content */
-    .content-container {
+    /* Main Navigation Bar */
+    #main-nav {
       display: flex;
-      height: calc(100vh - 50px);
-    }
-    
-    /* Sidebar */
-    #sidebar {
-      width: 80px;
-      background: var(--sidebar-bg);
-      padding: 20px 0;
-      display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
+      padding: 10px 15px;
+      margin-top: 50px; /* to account for the fixed toolbar */
+    }
+    #main-nav .nav-left {
+      display: flex;
+      align-items: center;
+    }
+    #appLogo {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+    }
+    #appName {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    #main-nav .nav-right {
+      display: flex;
       gap: 20px;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.5);
     }
-    .sidebar-item {
+    #main-nav .nav-right a {
+      text-decoration: none;
+      font-size: 16px;
       color: var(--text-color);
-      font-size: 26px;
-      cursor: pointer;
-      transition: background var(--transition-speed), color var(--transition-speed), transform 0.3s ease;
-      padding: 10px;
-      border-radius: 50%;
-      background: transparent;
+      transition: color var(--transition-speed);
+      -webkit-app-region: no-drag;
     }
-    /* On hover, apply a gradient background with scale and slight rotation */
-    .sidebar-item:hover {
-      background: linear-gradient(45deg, #6fb1fc, #fc6fb1);
-      color: #fff;
-      transform: scale(1.15) rotate(5deg);
-    }
-    /* Active sidebar item uses the same gradient */
-    .sidebar-item.active {
-      background: linear-gradient(45deg, #6fb1fc, #fc6fb1);
-      border-radius: 5px;
-      color: #fff;
-      padding: 10px;
+    #main-nav .nav-right a:hover {
+      color: var(--accent-color);
     }
     
     /* Main Content Area */
     .main-content {
-      flex: 1;
-      overflow-y: auto;
       padding: 20px;
       animation: slideInFromRight 0.5s ease-out;
     }
     
-    /* Home Page */
+    /* Home Page Updated */
     #home-page {
-      display: block;
-      text-align: left;
       padding: 40px;
-      animation: fadeIn var(--transition-speed);
+    }
+    .home-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .home-left {
+      flex: 1;
+      min-width: 300px;
+    }
+    .home-right {
+      flex: 1;
+      min-width: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .home-title {
       font-size: 36px;
       font-weight: bold;
+      margin-bottom: 20px;
       background: linear-gradient(90deg, #6fb1fc, #fc6fb1);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
-      animation: slideInFromRight 0.6s ease-out;
     }
-    .home-subtitle {
+    .home-description {
       font-size: 18px;
       margin-bottom: 30px;
-      min-height: 24px;
-      letter-spacing: 1px;
+      line-height: 1.5;
     }
-    .cards {
+    .home-buttons {
       display: flex;
       gap: 20px;
-      margin-bottom: 30px;
     }
-    .card {
-      width: 220px;
-      height: 160px;
-      background: var(--card-bg);
+    .home-buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
       border-radius: var(--border-radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
-      transition: transform 0.3s ease, background var(--transition-speed), box-shadow var(--transition-speed);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      transition: background var(--transition-speed);
+      background: var(--card-bg);
+      color: var(--text-color);
     }
-    .card:hover {
+    .home-buttons button:hover {
       background: var(--accent-color);
-      animation: pulse 0.4s;
-      transform: scale(1.05);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
+    }
+    .app-image {
+      max-width: 100%;
+      height: 400px;
     }
     
     /* Info Page */
@@ -349,39 +336,44 @@
     #settings-page {
       display: none;
       animation: fadeIn var(--transition-speed);
+      padding: 40px;
     }
     #settings-page h2 {
       margin-bottom: 20px;
       text-align: left;
     }
-    .settings-option {
-      margin-bottom: 15px;
+    #settings-page h3 {
+      margin: 20px 0 10px;
+      text-align: left;
+    }
+    .update-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
+      align-items: center;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--grid-bg);
     }
-    .settings-option label {
+    .update-label {
       font-size: 16px;
-      flex: 1;
     }
-    .settings-option .option-control {
-      flex: 1;
+    .update-value {
+      font-size: 16px;
       text-align: right;
     }
-    .settings-option select,
-    .settings-option input[type="number"] {
+    /* Styled input/select for settings */
+    .update-value input[type="number"],
+    .update-value select {
       background: var(--card-bg);
       border: 1px solid var(--grid-bg);
-      border-radius: 4px;
+      border-radius: var(--border-radius);
       padding: 5px 8px;
       color: var(--text-color);
       font-size: 16px;
       outline: none;
       transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
     }
-    .settings-option select:focus,
-    .settings-option input[type="number"]:focus {
+    .update-value input[type="number"]:focus,
+    .update-value select:focus {
       border-color: var(--accent-color);
       box-shadow: 0 0 5px var(--accent-color);
     }
@@ -390,27 +382,34 @@
     #update-page {
       display: none;
       animation: fadeIn var(--transition-speed);
+      padding: 40px;
     }
     #update-page h2 {
       margin-bottom: 20px;
       text-align: left;
     }
-    .update-container {
+    .update-details {
+      margin-bottom: 10px;
+    }
+    .update-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--grid-bg);
     }
-    .update-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .update-content p {
-      height: var(--update-height);
-      line-height: var(--update-height);
-      margin: 0;
+    .update-label {
       font-size: 16px;
     }
+    .update-value {
+      font-size: 16px;
+      text-align: right;
+    }
+    .update-action {
+      text-align: right;
+      margin: 10px 0;
+    }
+    /* Styled Update Button */
     #check-update {
       height: var(--update-height);
       line-height: var(--update-height);
@@ -418,13 +417,15 @@
       font-size: 16px;
       cursor: pointer;
       border: none;
-      border-radius: 5px;
-      background: var(--toolbar-bg);
+      border-radius: var(--border-radius);
+      background: linear-gradient(45deg, #6fb1fc, #fc6fb1);
       color: #fff;
-      transition: background var(--transition-speed);
+      transition: background var(--transition-speed), box-shadow var(--transition-speed);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
     #check-update:hover {
-      background: #555;
+      background: linear-gradient(45deg, #5ea1e0, #e05ea1);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
     }
     
     /* Modal Popup Styles */
@@ -460,7 +461,6 @@
       cursor: pointer;
       font-size: 24px;
     }
-    /* Gradient popup buttons */
     .modal-actions button {
       margin-right: 10px;
       padding: 8px 12px;
@@ -485,27 +485,60 @@
       width: 100%;
       resize: vertical;
     }
-  </style>
-  
-  <!-- Custom Scrollbar Styles -->
-  <style>
-    /* WebKit scrollbar styling (Chrome, Edge, Electron, etc.) */
-    body::-webkit-scrollbar {
-      width: 12px;
+    /* Navbar Link Base Style */
+#main-nav .nav-right a {
+  text-decoration: none;
+  font-size: 16px;
+  color: var(--text-color);
+  transition: color var(--transition-speed), transform var(--transition-speed);
+  -webkit-app-region: no-drag;
+  position: relative; /* Needed for the pseudo-element underline */
+}
+
+/* Hover Effect: Slight scale up with accent color */
+#main-nav .nav-right a:hover {
+  color: var(--accent-color);
+  transform: scale(1.05);
+}
+
+/* Active State: Colourized label with sliding underline */
+#main-nav .nav-right a.active {
+  color: var(--accent-color);
+}
+#main-nav .nav-right a.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: var(--accent-color);
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Keyframes for the sliding underline effect */
+@keyframes slideIn {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+    /* Animations */
+    @keyframes slideInFromRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
-    body::-webkit-scrollbar-track {
-      background: var(--grid-bg);
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
-    body::-webkit-scrollbar-thumb {
-      background-color: var(--accent-color);
-      border-radius: 6px;
-      border: 3px solid var(--grid-bg);
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
     }
-    
-    /* Firefox scrollbar styling */
-    body {
-      scrollbar-width: thin;
-      scrollbar-color: var(--accent-color) var(--grid-bg);
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
   </style>
   
@@ -514,9 +547,8 @@
   <script src="libs/umd.min.js"></script>
 </head>
 <body>
-  <!-- Toolbar -->
+  <!-- Toolbar with window controls (Sticky, Colored) -->
   <div id="toolbar">
-    <span id="appTitle">SVG Showcase</span>
     <div id="windowControls">
       <button id="minimizeBtn"><i class="fas fa-window-minimize"></i></button>
       <button id="maximizeBtn"><i class="fas fa-window-maximize"></i></button>
@@ -524,89 +556,126 @@
     </div>
   </div>
   
-  <div class="content-container">
-    <!-- Sidebar -->
-    <div id="sidebar">
-      <div class="sidebar-item" id="sidebar-home" title="Home">
-        <i class="fas fa-home"></i>
-      </div>
-      <div class="sidebar-item" id="sidebar-files" title="Files">
-        <i class="fas fa-file"></i>
-      </div>
-      <div class="sidebar-item" id="sidebar-settings" title="Settings">
-        <i class="fas fa-cog"></i>
-      </div>
-      <div class="sidebar-item" id="sidebar-update" title="Update">
-        <i class="fas fa-sync-alt"></i>
-      </div>
-      <div class="sidebar-item" id="sidebar-info" title="Info">
-        <i class="fas fa-info-circle"></i>
+  <!-- Main Navigation Bar -->
+  <nav id="main-nav">
+    <div class="nav-left">
+      <img src="assets/svg preview.png" alt="Logo" id="appLogo" />
+      <span id="appName">SVG Showcase</span>
+    </div>
+    <div class="nav-right">
+      <a href="#" id="nav-home">Home</a>
+      <a href="#" id="nav-files">Files</a>
+      <a href="#" id="nav-update">Update</a>
+      <a href="#" id="nav-settings">Settings</a>
+      <a href="#" id="nav-info">Info</a>
+    </div>
+  </nav>
+  
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Home Page -->
+    <div id="home-page">
+      <div class="home-container">
+        <div class="home-left">
+          <h1 class="home-title">SVG Showcase</h1>
+          <p class="home-description">
+            The most reliable tool for viewing and exporting SVG files in multiple formats.A powerful, elegant Electron-based SVG viewer and converter. Optimize, convert, and manage your SVG files with ease.
+          </p>
+          <div class="home-buttons">
+            <button id="openFolder">📁 Open Folder</button>
+            <button id="openFile">📂 Open SVG Files</button>
+          </div>
+        </div>
+        <div class="home-right">
+          <img src="assets/svg preview.png" alt="App Image" class="app-image" />
+        </div>
       </div>
     </div>
     
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Home Page -->
-      <div id="home-page">
-        <div class="home-title">SVG Showcase</div>
-        <div id="home-subtitle" class="home-subtitle"></div>
-        <div class="cards">
-          <div class="card" id="openFile">📂 Open SVG Files</div>
-          <div class="card" id="openFolder">📁 Open Folder</div>
+    <!-- Info Page -->
+    <div id="info-page">
+      <h2>About the Developer</h2>
+      <div class="info-content">
+        <p>Developed by NS Tech Bytes, a passionate developer dedicated to creating intuitive and engaging applications.</p>
+        <p>If you like this app, feel free to connect with me through the social links below:</p>
+        <div class="social-links">
+          <a href="https://github.com/NSTechBytes" target="_blank"><i class="fab fa-github"></i></a>
+          <a href="https://youtube.com/@nstechbytes" target="_blank"><i class="fab fa-youtube"></i></a>
+          <a href="https://nstechbytes.pages.dev/" target="_blank"><i class="fab fa-website"></i></a>
         </div>
       </div>
-      
-      <!-- Info Page -->
-      <div id="info-page">
-        <h2>About the Developer</h2>
-        <div class="info-content">
-          <p>Developed by NS Tech Bytes, a passionate developer dedicated to creating intuitive and engaging applications.</p>
-          <p>If you like this app, feel free to connect with me through the social links below:</p>
-          <div class="social-links">
-            <a href="https://github.com/NSTechBytes" target="_blank"><i class="fab fa-github"></i></a>
-            <a href="https://youtube.com/@nstechbytes" target="_blank"><i class="fab fa-youtube"></i></a>
-            <a href="https://nstechbytes.pages.dev/" target="_blank"><i class="fab fa-website"></i></a>
-          </div>
+    </div>
+    
+    <!-- Files Page -->
+    <div id="files-page">
+      <h2>Files</h2>
+      <div id="grid"></div>
+      <div id="no-files" style="display: none;">No file opened</div>
+    </div>
+    
+    <!-- Settings Page -->
+    <div id="settings-page">
+      <h2>Settings</h2>
+      <div class="update-row">
+        <div class="update-label">Theme:</div>
+        <div class="update-value">
+          <select id="theme-toggle">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
         </div>
       </div>
-      
-      <!-- Files Page -->
-      <div id="files-page">
-        <h2>Files</h2>
-        <div id="grid"></div>
-        <div id="no-files" style="display: none;">No file opened</div>
-      </div>
-      
-      <!-- Settings Page -->
-      <div id="settings-page">
-        <h2>Settings</h2>
-        <div class="settings-option">
-          <label for="theme-toggle">Theme:</label>
-          <div class="option-control">
-            <select id="theme-toggle">
-              <option value="dark">Dark</option>
-              <option value="light">Light</option>
-            </select>
-          </div>
-        </div>
-        <div class="settings-option">
-          <label for="preview-scale">Preview Height (px):</label>
-          <div class="option-control">
-            <input type="number" id="preview-scale" min="150" max="400" value="250" />
-          </div>
+      <div class="update-row">
+        <div class="update-label">Preview Height (px):</div>
+        <div class="update-value">
+          <input type="number" id="preview-scale" min="150" max="400" value="250" />
         </div>
       </div>
-      
-      <!-- Update Page -->
-      <div id="update-page">
-        <h2>Update</h2>
-        <div class="update-container">
-          <div class="update-content">
-            <p id="local-version">Local Version: N/A</p>
-            <p id="remote-version">Remote Version: N/A</p>
-            <p id="update-status">Status: Not checked</p>
-          </div>
-          <button id="check-update">Check for Updates</button>
+      <h3>Export Options</h3>
+      <div class="update-row">
+        <div class="update-label">PNG Width:</div>
+        <div class="update-value">
+          <input type="number" id="png-width" min="100" max="1920" value="800" />
+        </div>
+      </div>
+      <div class="update-row">
+        <div class="update-label">PNG Height:</div>
+        <div class="update-value">
+          <input type="number" id="png-height" min="100" max="1080" value="600" />
+        </div>
+      </div>
+      <div class="update-row">
+        <div class="update-label">Icon Width:</div>
+        <div class="update-value">
+          <input type="number" id="icon-width" min="16" max="256" value="64" />
+        </div>
+      </div>
+      <div class="update-row">
+        <div class="update-label">Icon Height:</div>
+        <div class="update-value">
+          <input type="number" id="icon-height" min="16" max="256" value="64" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- Update Page -->
+    <div id="update-page">
+      <h2>Update</h2>
+      <div class="update-action">
+        <button id="check-update">Check for Updates</button>
+      </div>
+      <div class="update-details">
+        <div class="update-row">
+          <div class="update-label">Local Version:</div>
+          <div class="update-value" id="local-version">N/A</div>
+        </div>
+        <div class="update-row">
+          <div class="update-label">Remote Version:</div>
+          <div class="update-value" id="remote-version">N/A</div>
+        </div>
+        <div class="update-row">
+          <div class="update-label">Status:</div>
+          <div class="update-value" id="update-status">Not checked</div>
         </div>
       </div>
     </div>
@@ -631,3 +700,5 @@
   <script src="renderer.js"></script>
 </body>
 </html>
+
+

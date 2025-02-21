@@ -1,21 +1,16 @@
-const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, shell,globalShortcut} = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { exec } = require('child_process');
-//const regedit = require('regedit');
-
 let mainWindow;
 
 ipcMain.handle('get-local-version', async () => {
   return new Promise((resolve, reject) => {
-    // Query the registry for the Version value.
     exec('reg query "HKCU\\Software\\SVG Showcase" /v Version', (error, stdout, stderr) => {
       if (error) {
         console.error('Registry query error:', error);
         return reject(error);
       }
-      // Look for a line like:
-      //    Version    REG_SZ    100.0.0
       const match = stdout.match(/Version\s+REG_SZ\s+([^\r\n]+)/);
       if (match && match[1]) {
         resolve(match[1].trim());
@@ -161,5 +156,36 @@ app.on("web-contents-created", (event, contents) => {
   contents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: "deny" };
+  });
+});
+//--------------------Disable Shortcuts----------------------------------
+app.on('browser-window-focus', function () {
+  // Disable reload shortcuts
+  //globalShortcut.register("CommandOrControl+R", () => {
+  //  console.log("CommandOrControl+R is pressed: Shortcut Disabled");
+  //});
+  //globalShortcut.register("F5", () => {
+  //  console.log("F5 is pressed: Shortcut Disabled");
+  //});
+
+  // Disable developer tools shortcuts
+  //globalShortcut.register("CommandOrControl+Shift+I", () => {
+  //  console.log("CommandOrControl+Shift+I is pressed: Shortcut Disabled");
+  //});
+ // globalShortcut.register("CommandOrControl+Shift+J", () => {
+ //   console.log("CommandOrControl+Shift+J is pressed: Shortcut Disabled");
+  //});
+  //globalShortcut.register("CommandOrControl+Shift+C", () => {
+  //  console.log("CommandOrControl+Shift+C is pressed: Shortcut Disabled");
+  //});
+
+  // Disable window toggle fullscreen if needed
+  globalShortcut.register("F11", () => {
+    console.log("F11 is pressed: Shortcut Disabled");
+  });
+
+  // Disable closing tab or window shortcuts if required (use with caution)
+  globalShortcut.register("CommandOrControl+W", () => {
+    console.log("CommandOrControl+W is pressed: Shortcut Disabled");
   });
 });
