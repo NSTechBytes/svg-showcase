@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SVG Showcase</title>
   
-  <!-- Local Font Awesome Solid & Brands -->
+  
   <style>
     @font-face {
       font-family: 'SVG-Showcase';
@@ -28,13 +28,14 @@
       font-style: normal;
       text-rendering: auto;
       line-height: 1;
+      font-size: large;
     }
-    /* Minimal Icon Mappings (Solid) */
+  
     .fa-window-minimize:before { content: "\e908"; }
     .fa-window-maximize:before { content: "\e904"; }
     .fa-window-restore:before { content: "\e900"; }
     .fa-times:before { content: "\e901"; }
-    /* Minimal Icon Mappings (Brands) */
+   
     .fa-github:before { content: "\e905"; }
     .fa-youtube:before { content: "\e90b"; }
     .fa-website:before { content: "\e90a"; }
@@ -54,6 +55,7 @@
       --transition-speed: 0.3s;
       --update-height: 40px;
       --toolbar-bg: #121212;
+      --gridscroll-bg: #121212;
     }
     .light-theme {
       --bg-color: #fafafa;
@@ -62,7 +64,8 @@
       --card-bg: #ffffff;
       --grid-bg: #e0e0e0;
       --accent-color: #4364f7;
-      --toolbar-bg: #eaeaea;
+      --toolbar-bg: #fafafa;
+      --gridscroll-bg: #fafafa;
     }
     
     * {
@@ -90,19 +93,19 @@
       width: 12px;
     }
     #content::-webkit-scrollbar-track {
-      background: var(--grid-bg);
+      background: var(--gridscroll-bg);
     }
     #content::-webkit-scrollbar-thumb {
       background-color: var(--accent-color);
       border-radius: 6px;
-      border: 3px solid var(--grid-bg);
+      border: 3px solid var(--gridscroll-bg);
     }
     /* Custom Scrollbar for the SVG Code Textarea */
     #modal-svg-code::-webkit-scrollbar {
       width: 8px;
     }
     #modal-svg-code::-webkit-scrollbar-track {
-      background: var(--grid-bg);
+      background: var(--gridscroll-bg);
     }
     #modal-svg-code::-webkit-scrollbar-thumb {
       background-color: var(--accent-color);
@@ -565,7 +568,7 @@
     }
   </style>
   
-  <!-- External Libraries for SVG Rendering & PDF Export -->
+ 
   <script src="libs/jspdf.umd.min.js"></script>
   <script src="libs/umd.min.js"></script>
 </head>

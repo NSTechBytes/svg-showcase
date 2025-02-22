@@ -1,6 +1,6 @@
 {
   "name": "svg-showcase",
-  "version": "101.0.0",
+  "version": "102.0.0",
   "description": "An Electron-based SVG viewer and converter that allows users to view and export SVG files in multiple formats.",
   "main": "index.js",
   "author": "NS Tech Bytes",
