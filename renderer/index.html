@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SVG Showcase</title>
+    <script src="../libs/jspdf.umd.min.js"></script>
+    <script src="../libs/umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Toolbar with window controls (Fixed) -->
+    <div id="toolbar">
+        <div id="windowControls">
+            <button id="minimizeBtn"><i class="fas fa-window-minimize"></i></button>
+            <button id="maximizeBtn"><i class="fas fa-window-maximize"></i></button>
+            <button id="closeBtn"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <!-- Scrollable Content Container -->
+    <div id="content">
+        <!-- Main Navigation Bar -->
+        <nav id="main-nav">
+            <div class="nav-left">
+                <img src="../assets/svg preview.png" alt="Logo" id="appLogo" />
+                <span id="appName">SVG Showcase</span>
+            </div>
+            <div class="nav-right">
+                <a href="#" id="nav-home">Home</a>
+                <a href="#" id="nav-files">Files</a>
+                <a href="#" id="nav-update">Update</a>
+                <a href="#" id="nav-settings">Settings</a>
+                <a href="#" id="nav-info">Info</a>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Home Page -->
+            <div id="home-page">
+                <div class="home-container">
+                    <div class="home-left">
+                        <h1 class="home-title">SVG Showcase</h1>
+                        <p class="home-description">
+                            The most reliable tool for viewing and exporting SVG files in multiple formats. A powerful,
+                            elegant
+                            Electron-based SVG viewer and converter. Optimize, convert, and manage your SVG files with
+                            ease.
+                        </p>
+                        <div class="home-buttons">
+                            <button id="openFolder">📁 Open Folder</button>
+                            <button id="openFile">📂 Open SVG Files</button>
+                        </div>
+                    </div>
+                    <div class="home-right">
+                        <img src="../assets/svg preview.png" alt="App Image" class="app-image" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Page -->
+            <div id="info-page">
+                <h2>About the Developer</h2>
+                <div class="info-content">
+                    <p>Developed by NS Tech Bytes, a passionate developer dedicated to creating intuitive and engaging
+                        applications.</p>
+                    <p>If you like this app, feel free to connect with me through the social links below:</p>
+                    <div class="social-links">
+                        <a href="https://github.com/NSTechBytes" target="_blank"><i class="fab fa-github"></i></a>
+                        <a href="https://youtube.com/@nstechbytes" target="_blank"><i class="fab fa-youtube"></i></a>
+                        <a href="https://nstechbytes.pages.dev/" target="_blank"><i class="fab fa-website"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Files Page -->
+            <div id="files-page">
+                <h2>Files</h2>
+                <div id="grid"></div>
+                <div id="no-files" style="display: none;">No file opened</div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings-page">
+                <h2>Settings</h2>
+                <div class="update-row">
+                    <div class="update-label">Theme:</div>
+                    <div class="update-value">
+                        <select id="theme-toggle">
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="update-row">
+                    <div class="update-label">Preview Height (px):</div>
+                    <div class="update-value">
+                        <input type="number" id="preview-scale" min="150" max="400" value="250" />
+                    </div>
+                </div>
+                <h3>Export Options</h3>
+                <div class="update-row">
+                    <div class="update-label">PNG Width:</div>
+                    <div class="update-value">
+                        <input type="number" id="png-width" min="100" max="1920" value="800" />
+                    </div>
+                </div>
+                <div class="update-row">
+                    <div class="update-label">PNG Height:</div>
+                    <div class="update-value">
+                        <input type="number" id="png-height" min="100" max="1080" value="600" />
+                    </div>
+                </div>
+                <div class="update-row">
+                    <div class="update-label">Icon Width:</div>
+                    <div class="update-value">
+                        <input type="number" id="icon-width" min="16" max="256" value="64" />
+                    </div>
+                </div>
+                <div class="update-row">
+                    <div class="update-label">Icon Height:</div>
+                    <div class="update-value">
+                        <input type="number" id="icon-height" min="16" max="256" value="64" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Page -->
+            <div id="update-page">
+                <h2>Update</h2>
+                <div class="update-action">
+                    <button id="check-update">Check for Updates</button>
+                </div>
+                <div class="update-details">
+                    <div class="update-row">
+                        <div class="update-label">Local Version:</div>
+                        <div class="update-value" id="local-version">N/A</div>
+                    </div>
+                    <div class="update-row">
+                        <div class="update-label">Remote Version:</div>
+                        <div class="update-value" id="remote-version">N/A</div>
+                    </div>
+                    <div class="update-row">
+                        <div class="update-label">Status:</div>
+                        <div class="update-value" id="update-status">Not checked</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Popup for SVG File Info -->
+    <div id="fileModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modal-file-name">File Name</h2>
+            <div id="modal-svg-preview" style="margin: 10px 0;"></div>
+            <textarea id="modal-svg-code" readonly style="height: 150px;"></textarea>
+            <div class="modal-actions" style="margin-top: 10px;">
+                <button id="export-png">Export as PNG</button>
+                <button id="export-ico">Export as ICO</button>
+                <button id="copy-svg">Copy SVG Code</button>
+                <button id="save-pdf">Save as PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

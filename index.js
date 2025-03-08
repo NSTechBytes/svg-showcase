@@ -23,8 +23,10 @@ ipcMain.handle('get-local-version', async () => {
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 950,
+    height: 650,
+    minWidth:600,
+    minHeight:400,
     frame: false,
     titleBarStyle: "hidden",
     icon: path.join(__dirname, "assets", "icon.ico"),
@@ -35,7 +37,7 @@ function createMainWindow() {
     },
   });
 
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile("renderer/index.html");
 
   // Update window state for renderer
   mainWindow.on("maximize", () => {
@@ -161,23 +163,23 @@ app.on("web-contents-created", (event, contents) => {
 //--------------------Disable Shortcuts----------------------------------
 app.on('browser-window-focus', function () {
   // Disable reload shortcuts
-  //globalShortcut.register("CommandOrControl+R", () => {
+  globalShortcut.register("CommandOrControl+R", () => {
   //  console.log("CommandOrControl+R is pressed: Shortcut Disabled");
-  //});
-  //globalShortcut.register("F5", () => {
+  });
+  globalShortcut.register("F5", () => {
   //  console.log("F5 is pressed: Shortcut Disabled");
-  //});
+  });
 
   // Disable developer tools shortcuts
-  //globalShortcut.register("CommandOrControl+Shift+I", () => {
+  globalShortcut.register("CommandOrControl+Shift+I", () => {
   //  console.log("CommandOrControl+Shift+I is pressed: Shortcut Disabled");
-  //});
- // globalShortcut.register("CommandOrControl+Shift+J", () => {
+  });
+  globalShortcut.register("CommandOrControl+Shift+J", () => {
  //   console.log("CommandOrControl+Shift+J is pressed: Shortcut Disabled");
-  //});
-  //globalShortcut.register("CommandOrControl+Shift+C", () => {
+  });
+  globalShortcut.register("CommandOrControl+Shift+C", () => {
   //  console.log("CommandOrControl+Shift+C is pressed: Shortcut Disabled");
-  //});
+  });
 
   // Disable window toggle fullscreen if needed
   globalShortcut.register("F11", () => {

@@ -1,0 +1,734 @@
+@font-face {
+    font-family: 'SVG-Showcase';
+    src: url('../fonts/SVG-Showcase.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+.fas {
+    font-family: 'SVG-Showcase' !important;
+    font-weight: 900;
+    display: inline-block;
+    font-style: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+.fab {
+    font-family: 'SVG-Showcase' !important;
+    font-weight: 400;
+    display: inline-block;
+    font-style: normal;
+    text-rendering: auto;
+    line-height: 1;
+    font-size: large;
+}
+
+.fa-window-minimize:before {
+    content: "\e908";
+}
+
+.fa-window-maximize:before {
+    content: "\e904";
+}
+
+.fa-window-restore:before {
+    content: "\e900";
+}
+
+.fa-times:before {
+    content: "\e901";
+}
+
+.fa-github:before {
+    content: "\e905";
+}
+
+.fa-youtube:before {
+    content: "\e90b";
+}
+
+.fa-website:before {
+    content: "\e90a";
+}
+
+:root {
+    --bg-color: #0d1117;
+    --text-color: #e0e0e0;
+    --sidebar-bg: #1c1c1c;
+    --card-bg: #1b2431;
+    --grid-bg: #2a313a;
+    --preview-height: 250px;
+    --accent-color: #477fba;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+    --update-height: 40px;
+    --toolbar-bg: #0d1117;
+    --gridscroll-bg:  #0d1117;
+}
+
+.light-theme {
+    --bg-color: #fafafa;
+    --text-color: #333333;
+    --sidebar-bg: #eaeaea;
+    --card-bg: #ffffff;
+    --grid-bg: #e0e0e0;
+    --accent-color: #4364f7;
+    --toolbar-bg: #fafafa;
+    --gridscroll-bg: #fafafa;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: 20px;
+    overflow: hidden;
+    /* Prevent scrolling on body */
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* Custom Scrollbar Styles for the Content Container */
+#content {
+    margin-top: 50px;
+    /* Height of the fixed toolbar */
+    height: calc(100vh - 50px);
+    overflow-y: auto;
+}
+
+#content::-webkit-scrollbar {
+    width: 12px;
+}
+
+#content::-webkit-scrollbar-track {
+    background: var(--gridscroll-bg);
+}
+
+#content::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 6px;
+    border: 3px solid var(--gridscroll-bg);
+}
+
+/* Custom Scrollbar for the SVG Code Textarea */
+#modal-svg-code::-webkit-scrollbar {
+    width: 8px;
+}
+
+#modal-svg-code::-webkit-scrollbar-track {
+    background: var(--gridscroll-bg);
+}
+
+#modal-svg-code::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 4px;
+}
+
+/* Toolbar with window controls - Sticky & Colored */
+#toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: var(--toolbar-bg);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 15px;
+    -webkit-app-region: drag;
+    z-index: 1000;
+}
+
+#windowControls {
+    display: flex;
+    -webkit-app-region: no-drag;
+}
+
+#windowControls button {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 18px;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: background var(--transition-speed), transform var(--transition-speed);
+    border-radius: 3px;
+    width: 35px;
+    height: 35px;
+}
+
+/* Apply a subtle wiggle on hover for window controls */
+#windowControls button:hover {
+    animation: wiggle 0.5s ease;
+}
+
+/* Main Navigation Bar */
+#main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+}
+
+#main-nav .nav-left {
+    display: flex;
+    align-items: center;
+}
+
+/* Animate the logo on hover */
+#appLogo {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    transition: transform 0.5s;
+}
+
+#appLogo:hover {
+    animation: spin 1s linear;
+}
+
+#appName {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#main-nav .nav-right {
+    display: flex;
+    gap: 20px;
+}
+
+/* Navigation link animation combining scale and slight rotation */
+#main-nav .nav-right a {
+    text-decoration: none;
+    font-size: 16px;
+    color: var(--text-color);
+    transition: color var(--transition-speed);
+    -webkit-app-region: no-drag;
+    position: relative;
+}
+
+#main-nav .nav-right a:hover {
+    animation: navHoverAnim 0.3s ease forwards;
+    color: var(--accent-color);
+}
+
+#main-nav .nav-right a.active {
+    color: var(--accent-color);
+}
+
+#main-nav .nav-right a.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-color);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+/* Main Content Area */
+.main-content {
+    padding: 20px;
+    animation: slideInFromRight 0.5s ease-out;
+}
+
+/* Home Page Updated */
+#home-page {
+    padding: 40px;
+}
+
+.home-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.home-left {
+    flex: 1;
+    min-width: 300px;
+}
+
+.home-right {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Bounce animation on the home title */
+.home-title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #6fb1fc, #fc6fb1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: bounce 1s ease-out;
+}
+
+.home-description {
+    font-size: 18px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.home-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.home-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background var(--transition-speed);
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+/* Pulse effect on button hover */
+.home-buttons button:hover {
+    animation: pulse 0.6s ease;
+    background: var(--accent-color);
+}
+
+/* Floating animation on the home image */
+.app-image {
+    max-width: 100%;
+    height: 400px;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Info Page */
+#info-page {
+    display: none;
+    text-align: left;
+    padding: 40px;
+    animation: fadeIn var(--transition-speed);
+}
+
+#info-page h2 {
+    margin-bottom: 20px;
+}
+
+.info-content {
+    max-width: 600px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.social-links {
+    margin-top: 20px;
+}
+
+.social-links a {
+    text-decoration: none;
+    color: var(--accent-color);
+    margin-right: 10px;
+    font-size: 24px;
+    transition: transform 0.5s ease;
+}
+
+.dark-theme .social-links a {
+    color: #fff;
+}
+
+.social-links a:hover {
+    transform: scale(1.2) rotate(360deg);
+}
+
+/* Files Page */
+#files-page {
+    display: none;
+    animation: fadeIn var(--transition-speed);
+}
+
+#files-page h2 {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+.svg-card {
+    background: var(--card-bg);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.svg-card:hover {
+    transform: translateY(-5px);
+}
+
+.svg-preview {
+    width: 100%;
+    height: var(--preview-height);
+    background: var(--grid-bg);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.svg-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.svg-card p {
+    margin-top: 8px;
+    font-size: 14px;
+    word-break: break-all;
+}
+
+#no-files {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+/* Settings Page */
+#settings-page {
+    display: none;
+    animation: fadeIn var(--transition-speed);
+    padding: 40px;
+}
+
+#settings-page h2 {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+#settings-page h3 {
+    margin: 20px 0 10px;
+    text-align: left;
+}
+
+.update-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--grid-bg);
+}
+
+.update-label {
+    font-size: 16px;
+}
+
+.update-value {
+    font-size: 16px;
+    text-align: right;
+}
+
+.update-value input[type="number"],
+.update-value select {
+    background: var(--card-bg);
+    border: 1px solid var(--grid-bg);
+    border-radius: var(--border-radius);
+    padding: 5px 8px;
+    color: var(--text-color);
+    font-size: 16px;
+    outline: none;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.update-value input[type="number"]:focus,
+.update-value select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px var(--accent-color);
+}
+
+/* Update Page */
+#update-page {
+    display: none;
+    animation: fadeIn var(--transition-speed);
+    padding: 40px;
+}
+
+#update-page h2 {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.update-details {
+    margin-bottom: 10px;
+}
+
+.update-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--grid-bg);
+}
+
+.update-label {
+    font-size: 16px;
+}
+
+.update-value {
+    font-size: 16px;
+    text-align: right;
+}
+
+.update-action {
+    text-align: right;
+    margin: 10px 0;
+}
+
+#check-update {
+    height: var(--update-height);
+    line-height: var(--update-height);
+    padding: 0 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    background: linear-gradient(45deg, #6fb1fc, #fc6fb1);
+    color: #fff;
+    transition: background var(--transition-speed), box-shadow var(--transition-speed);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#check-update:hover {
+    background: linear-gradient(45deg, #5ea1e0, #e05ea1);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+
+/* Modal Popup Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn var(--transition-speed);
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    width: 80%;
+    max-width: 600px;
+    color: var(--text-color);
+    position: relative;
+    text-align: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    animation: scaleIn 0.4s ease, fadeIn 0.4s ease;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 24px;
+    transition: transform 0.3s;
+}
+
+.close-button:hover {
+    animation: wiggle 0.5s ease;
+}
+
+.modal-actions button {
+    margin-right: 10px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: linear-gradient(45deg, #6fb1fc, #fc6fb1);
+    color: #fff;
+    transition: background 0.3s, transform 0.3s, opacity 0.3s;
+}
+
+.modal-actions button:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+.modal-content textarea {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--grid-bg);
+    border-radius: 4px;
+    padding: 8px;
+    font-family: monospace;
+    width: 100%;
+    resize: vertical;
+}
+
+/* Animations */
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Bounce animation for the home title */
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Spin animation for the logo */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Combined nav hover animation: scale and slight rotation */
+@keyframes navHoverAnim {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.05) rotate(2deg);
+    }
+
+    100% {
+        transform: scale(1.05) rotate(0deg);
+    }
+}
+
+/* Wiggle animation for interactive elements */
+@keyframes wiggle {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(2deg);
+    }
+
+    50% {
+        transform: rotate(-2deg);
+    }
+
+    75% {
+        transform: rotate(2deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* Floating animation for the home image */
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
