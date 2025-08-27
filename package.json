@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "canvg": "^3.0.0",
-    "jspdf": "^2.5.1"
+    "jspdf": "^3.0.2"
   },
   "devDependencies": {
     "electron": "^34.2.0",
